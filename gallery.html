@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Keeper - My Gallery</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+GB+J:ital,wght@0,100..400;1,100..400&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Playwrite GB J", cursive;
+            font-optical-sizing: auto;
+            font-weight: <weight>;
+            font-style: normal;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient( 135deg, #fff3e0, #f5deb3, #d4af37);
+            padding: 30px;
+        }
+        /* HEADER */
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #7a5200;
+            font-size: 2.5rem;
+        }
+        
+        .header p {
+            color: #444;
+            margin-top: 10px;
+        }
+        /* TOGGLE */
+        
+        .toggle-wrapper {
+            width: 350px;
+            max-width: 100%;
+            height: 60px;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            border-radius: 50px;
+            position: relative;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            border-radius: 50px;
+            background: linear-gradient( 45deg, #FFD700, #FFB347);
+            transition: all .35s ease;
+        }
+        
+        .option {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 2;
+            font-weight: 700;
+        }
+        
+        .active-private .slider {
+            left: 50%;
+        }
+        /* GRID */
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        /* CARD */
+        
+        .item {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+            transition: 0.3s;
+        }
+        
+        .item:hover {
+            transform: translateY(-8px);
+        }
+        
+        .item img,
+        .item video {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+        
+        .info {
+            padding: 15px;
+        }
+        
+        .info h3 {
+            color: #7a5200;
+            margin-bottom: 8px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .public {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .private {
+            background: #f44336;
+            color: white;
+        }
+        /* VIEWER */
+        
+        .viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .viewer-box {
+            width: 90%;
+            max-width: 900px;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+        }
+        
+        .viewer-box img,
+        .viewer-box video {
+            width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 15px;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        
+        .download {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .share {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .close {
+            background: #f44336;
+            color: white;
+        }
+        /* EMPTY */
+        
+        .empty {
+            text-align: center;
+            padding: 80px 20px;
+            color: #666;
+            font-size: 18px;
+        }
+        
+        @media(max-width:768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .toggle-wrapper {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+
+        <h1>📸 My Gallery</h1>
+
+        <p>
+            View your Public and Private uploads
+        </p>
+
+    </div>
+
+    <!-- TOGGLE -->
+
+    <div id="toggle" class="toggle-wrapper">
+
+        <div id="slider" class="slider"></div>
+
+        <div class="option" id="publicBtn">
+            🌐 PUBLIC
+        </div>
+
+        <div class="option" id="privateBtn">
+            🔒 PRIVATE
+        </div>
+
+    </div>
+
+    <!-- GALLERY GRID -->
+
+    <div class="gallery" id="galleryGrid"></div>
+
+    <!-- VIEWER -->
+
+    <div class="viewer" id="viewer">
+
+        <div class="viewer-box">
+
+            <div id="viewerMedia"></div>
+
+            <div class="actions">
+
+                <button class="download" onclick="downloadMedia()">
+                Download
+            </button>
+
+                <button class="share" onclick="shareMedia()">
+                Share
+            </button>
+
+                <button class="close" onclick="closeViewer()">
+                Close
+            </button>
+
+            </div>
+
+        </div>
+
+    </div>
+    <script>
+        const DATABASE_ID = "6a23f8dc002dca4e805d";
+        const COLLECTION_ID = "files";
+        const BUCKET_ID = "6a23ffa10027904cec34";
+
+        let publicGallery = [];
+        let privateGallery = [];
+        let currentFile = null;
+
+        /* LOAD FILES */
+
+        window.onload = async function() {
+
+            try {
+
+                const user = await account.get();
+
+                const response =
+                    await databases.listDocuments(
+                        DATABASE_ID,
+                        COLLECTION_ID
+                    );
+
+                const myFiles =
+                    response.documents.filter(
+                        doc => doc.ownerId === user.$id
+                    );
+
+                publicGallery = [];
+                privateGallery = [];
+
+                myFiles.forEach(doc => {
+
+                    const fileUrl =
+                        storage.getFileView(
+                            BUCKET_ID,
+                            doc.fileUrl
+                        ).toString();
+
+                    const fileData = {
+
+                        name: doc.customername,
+
+                        url: fileUrl,
+
+                        type: doc.fileType &&
+                            doc.fileType.startsWith("video") ?
+                            "video" : "image"
+
+                    };
+
+                    if (doc.isprivate === true) {
+
+                        privateGallery.push(
+                            fileData
+                        );
+
+                    } else {
+
+                        publicGallery.push(
+                            fileData
+                        );
+
+                    }
+
+                });
+
+                console.log(
+                    "Public:",
+                    publicGallery
+                );
+
+                console.log(
+                    "Private:",
+                    privateGallery
+                );
+
+                renderGallery(
+                    publicGallery,
+                    "public"
+                );
+
+                document
+                    .getElementById("slider")
+                    .style.left = "0%";
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Please login first"
+                );
+
+                window.location.href =
+                    "login.html";
+
+            }
+
+        };
+
+        /* TOGGLE BUTTONS */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                document
+                    .getElementById("publicBtn")
+                    .addEventListener(
+                        "click",
+                        function() {
+
+                            document
+                                .getElementById("slider")
+                                .style.left = "0%";
+
+                            renderGallery(
+                                publicGallery,
+                                "public"
+                            );
+
+                        }
+                    );
+
+                document
+                    .getElementById("privateBtn")
+                    .addEventListener(
+                        "click",
+                        function() {
+
+                            document
+                                .getElementById("slider")
+                                .style.left = "50%";
+
+                            renderGallery(
+                                privateGallery,
+                                "private"
+                            );
+
+                        }
+                    );
+
+            }
+        );
+
+        /* RENDER GALLERY */
+
+        function renderGallery(
+            files,
+            mode
+        ) {
+
+            const grid =
+                document.getElementById(
+                    "galleryGrid"
+                );
+
+            grid.innerHTML = "";
+
+            if (files.length === 0) {
+
+                grid.innerHTML = `
+            <div class="empty">
+                No files available
+            </div>
+        `;
+
+                return;
+
+            }
+
+            files.forEach(file => {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+                div.className = "item";
+
+                let media = "";
+
+                if (file.type === "image") {
+
+                    media =
+                        `<img src="${file.url}">`;
+
+                } else {
+
+                    media =
+                        `<video src="${file.url}"></video>`;
+
+                }
+
+                div.innerHTML = `
+
+            ${media}
+
+            <div class="info">
+
+                <h3>${file.name}</h3>
+
+                <span class="badge ${mode}">
+                    ${mode.toUpperCase()}
+                </span>
+
+            </div>
+
+        `;
+
+                div.onclick = function() {
+
+                    openViewer(file);
+
+                };
+
+                grid.appendChild(div);
+
+            });
+
+        }
+
+        /* OPEN VIEWER */
+
+        function openViewer(file) {
+
+            currentFile = file;
+
+            const viewer =
+                document.getElementById(
+                    "viewerMedia"
+                );
+
+            if (file.type === "image") {
+
+                viewer.innerHTML = `
+            <img src="${file.url}">
+        `;
+
+            } else {
+
+                viewer.innerHTML = `
+            <video
+                controls
+                autoplay
+                src="${file.url}">
+            </video>
+        `;
+
+            }
+
+            document
+                .getElementById("viewer")
+                .style.display = "flex";
+
+        }
+
+        /* CLOSE */
+
+        function closeViewer() {
+
+            document
+                .getElementById("viewer")
+                .style.display = "none";
+
+        }
+
+        /* DOWNLOAD */
+
+        function downloadMedia() {
+
+            if (!currentFile) return;
+
+            const a =
+                document.createElement(
+                    "a"
+                );
+
+            a.href =
+                currentFile.url;
+
+            a.download =
+                currentFile.name;
+
+            a.click();
+
+        }
+
+        /* SHARE */
+
+        function shareMedia() {
+
+            if (!currentFile) return;
+
+            navigator.clipboard.writeText(
+                currentFile.url
+            );
+
+            alert(
+                "Link copied!"
+            );
+
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@15.0.0"></script>
+    <script src="appwrite.js"></script>
+</body>
+
+</html>

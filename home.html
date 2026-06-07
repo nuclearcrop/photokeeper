@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Keeper - Home</title>
+    <link rel="icon" type="image/png" href="image/logo.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Honk:MORF@15&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+GB+J:ital,wght@0,100..400;1,100..400&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Playwrite GB J", cursive;
+            font-optical-sizing: auto;
+            font-weight: <weight>;
+            font-style: normal;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient( 135deg, #0e0b09, #1b130d, #3d2b1f, #c9a66b);
+            overflow-x: hidden;
+            color: white;
+        }
+        /* NAVBAR */
+        
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            max-height: 75px;
+        }
+        
+        .logo {
+            font-size: 30px;
+            font-weight: 800;
+            color: #FFD700;
+            font-family: "Honk", system-ui;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings: "MORF" 15, "SHLN" 50;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            padding-left: 30px;
+            padding-right: 10px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            transition: 0.3s;
+        }
+        
+        nav ul li a:hover {
+            color: #FFD700;
+        }
+        /* PROFILE */
+        
+        .profile-container {
+            position: relative;
+            margin-left: 20px;
+        }
+        
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #FFD700;
+            cursor: pointer;
+            object-fit: cover;
+        }
+        
+        .profile-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            width: 260px;
+            background: white;
+            color: black;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            display: none;
+        }
+        
+        .profile-menu.show {
+            display: block;
+        }
+        
+        .profile-header {
+            padding: 20px;
+            text-align: center;
+            background: #f8f8f8;
+        }
+        
+        .profile-header img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        
+        .profile-header h4 {
+            color: #222;
+        }
+        
+        .profile-menu button {
+            width: 100%;
+            border: none;
+            background: white;
+            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        
+        .profile-menu button:hover {
+            background: #f3f3f3;
+        }
+        /* HERO */
+        
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+        }
+        
+        .hero-content h1 {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            animation: fadeUp 1s ease;
+            max-width: 950px;
+        }
+        
+        .hero-content span {
+            color: #FFD700;
+        }
+        
+        .hero-content p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 16px 40px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient( 45deg, #FFD700, #FFB347);
+            color: black;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.4s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
+        }
+        /* GLOWS */
+        
+        .glow1 {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.15);
+            filter: blur(100px);
+            top: -150px;
+            right: -100px;
+        }
+        
+        .glow2 {
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            background: rgba(255, 180, 80, 0.15);
+            filter: blur(100px);
+            bottom: -100px;
+            left: -100px;
+        }
+        /* FEATURES */
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 80px 8%;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            transition: 0.4s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-card h3 {
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+        /* FOOTER */
+        
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        footer h3 {
+            font-family: "Honk", system-ui;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings: "MORF" 15, "SHLN" 50;
+            font-size: 2rem;
+        }
+        
+        footer p a {
+            color: rgba(12, 87, 22, 0.781);
+            text-decoration: none;
+        }
+        
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media(max-width:768px) {
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+            nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .nav-right {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="glow1"></div>
+    <div class="glow2"></div>
+
+    <nav>
+
+        <div class="logo"> Photo Keeper</div>
+
+        <div class="nav-right">
+
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="upload.html">Upload</a></li>
+                <li><a href="search.html">Search</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+            </ul>
+
+            <div class="profile-container">
+
+                <img id="profilePic" class="profile-pic" src="https://ui-avatars.com/api/?name=User&background=FFD700&color=000">
+
+                <div id="profileMenu" class="profile-menu">
+
+                    <div class="profile-header">
+                        <img id="menuAvatar" src="https://ui-avatars.com/api/?name=User&background=FFD700&color=000">
+                        <h4 id="userName">User</h4>
+                    </div>
+
+                    <button id="changePasswordBtn">
+🔒 Change Password
+</button>
+
+
+                    <button id="changePrivatePasswordBtn">
+    Change Private Password
+</button>
+
+                    <button id="logoutBtn">
+🚪 Logout
+</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <h1>
+                Welcome Back to <span>Photo Keeper</span>
+            </h1>
+
+            <p>
+                Search, upload, organize and securely manage your photographs from one beautiful dashboard.
+            </p>
+
+            <div class="action-buttons">
+
+                <a href="upload.html" class="btn">
+📤 Upload Images
+</a>
+
+                <a href="search.html" class="btn">
+🔍 Search Images
+</a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="features">
+
+        <div class="feature-card">
+            <h3>📤 Upload Photos</h3>
+            <p>Upload and organize all your images securely.</p>
+        </div>
+
+        <div class="feature-card">
+            <h3>🔍 Search Instantly</h3>
+            <p>Find any image within seconds using custom names.</p>
+        </div>
+
+        <div class="feature-card">
+            <h3>🛡 Private Storage</h3>
+            <p>Protect personal images with an additional password layer.</p>
+        </div>
+
+    </section>
+
+    <footer>
+        <h3>Photo Keeper</h3>
+        <p>Premium Photography Storage Platform <a href="nuclearcrop.github.io/web/">know about me</a></p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@15.0.0"></script>
+    <script src="appwrite.js"></script>
+
+    <script>
+        const DATABASE_ID = "6a23f8dc002dca4e805d";
+        const COLLECTION_ID = "files";
+
+        /* PROFILE MENU */
+
+        const profilePic = document.getElementById("profilePic");
+        const profileMenu = document.getElementById("profileMenu");
+
+        if (profilePic && profileMenu) {
+
+            profilePic.addEventListener("click", () => {
+                profileMenu.classList.toggle("show");
+            });
+
+            document.addEventListener("click", (e) => {
+
+                if (!profilePic.contains(e.target) &&
+                    !profileMenu.contains(e.target)
+                ) {
+                    profileMenu.classList.remove("show");
+                }
+
+            });
+
+        }
+
+        /* LOAD USER */
+
+        async function loadUser() {
+
+            try {
+
+                const user = await account.get();
+
+                const userName =
+                    document.getElementById("userName");
+
+                if (userName) {
+                    userName.innerText =
+                        user.name || "User";
+                }
+
+            } catch (error) {
+
+                window.location.href =
+                    "login.html";
+
+            }
+
+        }
+
+        loadUser();
+
+        /* LOGOUT */
+
+        const logoutBtn =
+            document.getElementById("logoutBtn");
+
+        if (logoutBtn) {
+
+            logoutBtn.addEventListener(
+                "click",
+                async() => {
+
+                    try {
+
+                        await account.deleteSession(
+                            "current"
+                        );
+
+                        window.location.href =
+                            "index.html";
+
+                    } catch (err) {
+
+                        alert(err.message);
+
+                    }
+
+                }
+            );
+
+        }
+
+        /* ACCOUNT PASSWORD */
+
+        const changePasswordBtn =
+            document.getElementById(
+                "changePasswordBtn"
+            );
+
+        if (changePasswordBtn) {
+
+            changePasswordBtn.addEventListener(
+                "click",
+                async() => {
+
+                    const oldPass =
+                        prompt(
+                            "Enter current password"
+                        );
+
+                    const newPass =
+                        prompt(
+                            "Enter new password"
+                        );
+
+                    if (!oldPass ||
+                        !newPass
+                    ) return;
+
+                    try {
+
+                        await account.updatePassword(
+                            newPass,
+                            oldPass
+                        );
+
+                        alert(
+                            "Account password updated successfully"
+                        );
+
+                    } catch (err) {
+
+                        alert(
+                            err.message
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+        /* PRIVATE FILE PASSWORD */
+
+        async function changePrivatePassword() {
+
+            const newPassword =
+                prompt(
+                    "Enter new password for ALL private files"
+                );
+
+            if (!newPassword) return;
+
+            try {
+
+                const user =
+                    await account.get();
+
+                const response =
+                    await databases.listDocuments(
+                        DATABASE_ID,
+                        COLLECTION_ID
+                    );
+
+                const myPrivateFiles =
+                    response.documents.filter(
+                        doc =>
+                        doc.ownerId === user.$id &&
+                        doc.isprivate === true
+                    );
+
+                if (
+                    myPrivateFiles.length === 0
+                ) {
+
+                    alert(
+                        "No private files found"
+                    );
+
+                    return;
+
+                }
+
+                for (
+                    const file
+                    of myPrivateFiles
+                ) {
+
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        COLLECTION_ID,
+                        file.$id, {
+                            privatePassword: newPassword
+                        }
+                    );
+
+                }
+
+                alert(
+                    "Private password updated for all files"
+                );
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    error.message
+                );
+
+            }
+
+        }
+
+        /* CONNECT BUTTON */
+
+        const changePrivatePasswordBtn =
+            document.getElementById(
+                "changePrivatePasswordBtn"
+            );
+
+        if (changePrivatePasswordBtn) {
+
+            changePrivatePasswordBtn
+                .addEventListener(
+                    "click",
+                    changePrivatePassword
+                );
+
+        }
+    </script>
+</body>
+
+</html>

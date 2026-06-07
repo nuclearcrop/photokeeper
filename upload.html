@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Keeper - Upload</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+GB+J:ital,wght@0,100..400;1,100..400&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Playwrite GB J", cursive;
+            font-optical-sizing: auto;
+            font-weight: <weight>;
+            font-style: normal;
+        }
+        
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #5a2d00, #ffb347, #d97706);
+        }
+        /* CARD */
+        
+        .card {
+            width: 90%;
+            max-width: 650px;
+            padding: 40px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px);
+            color: white;
+        }
+        /* INPUT */
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 12px;
+            outline: none;
+        }
+        /* SUGGESTIONS */
+        
+        .suggestions {
+            margin-top: 5px;
+            font-size: 13px;
+            color: #ffe082;
+        }
+        
+        .warning {
+            font-size: 13px;
+            color: #ff5252;
+        }
+        /* GLASS TOGGLE */
+        
+        .toggle-wrapper {
+            width: 100%;
+            height: 55px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            display: flex;
+            position: relative;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        #previewContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .preview-item {
+            width: 180px;
+        }
+        
+        .preview-item img,
+        .preview-item video {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+        }
+        
+        .slider {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 40px;
+            transition: 0.4s;
+            left: 0;
+        }
+        
+        .option {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 2;
+        }
+        
+        .active-private .slider {
+            left: 50%;
+            background: rgba(255, 80, 80, 0.3);
+        }
+        /* FILE BUTTON (CUSTOM PREMIUM) */
+        
+        .file-wrapper {
+            margin-top: 15px;
+        }
+        
+        .file-label {
+            display: block;
+            padding: 18px;
+            text-align: center;
+            border-radius: 15px;
+            border: 2px dashed rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: 0.3s;
+            background: rgba(0, 0, 0, 0.15);
+        }
+        
+        .file-label:hover {
+            transform: scale(1.02);
+            border-color: #FFD700;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        /* BUTTON */
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            margin-top: 15px;
+            background: linear-gradient(45deg, #FFD700, #FFB347);
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+
+        <h2>Upload Media</h2>
+        <p>Smart name generator + public/private system</p>
+
+        <!-- NAME -->
+        <input type="text" id="nameInput" placeholder="Enter Unique Name">
+
+        <div class="warning" id="warning"></div>
+        <div class="suggestions" id="suggestions"></div>
+
+        <!-- TOGGLE -->
+        <div id="toggle" class="toggle-wrapper">
+
+            <div class="slider"></div>
+
+            <div class="option" onclick="setPublic()">PUBLIC</div>
+            <div class="option" onclick="setPrivate()">PRIVATE</div>
+
+        </div>
+
+        <!-- FILE UPLOAD -->
+        <div class="file-wrapper">
+
+            <label class="file-label">
+📁 Click to Choose Image / Video
+<input
+    type="file"
+    id="mediaFile"
+    multile
+    accept="image/*,video/*"
+>
+<div id="previewContainer"></div></label>
+
+        </div>
+
+        <button id="uploadBtn">
+Upload
+</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@15.0.0"></script>
+    <script src="appwrite.js"></script>
+
+    <script>
+        let existingNames = ["wedding001", "birthday2024", "natureclip"];
+        let isPrivate = false;
+        let currentUser = null;
+
+        /* AUTO UNIQUE NAME GENERATOR */
+        function generateSuggestions(base) {
+
+            let suggestions = [];
+
+            for (let i = 1; i <= 5; i++) {
+                suggestions.push(
+                    base + "_" + Math.floor(Math.random() * 9999)
+                );
+            }
+
+            return suggestions;
+        }
+
+        /* LIVE NAME CHECK */
+        document.getElementById("nameInput")
+            .addEventListener("input", function() {
+
+                let val = this.value.trim();
+
+                let warning =
+                    document.getElementById("warning");
+
+                let suggestionsBox =
+                    document.getElementById("suggestions");
+
+                if (val.length === 0) {
+
+                    warning.innerHTML = "";
+                    suggestionsBox.innerHTML = "";
+                    return;
+
+                }
+
+                if (existingNames.includes(val)) {
+
+                    warning.innerHTML =
+                        "⚠ Name already taken";
+
+                    let suggestions =
+                        generateSuggestions(val);
+
+                    suggestionsBox.innerHTML =
+                        "Try: " + suggestions.join(", ");
+
+                } else {
+
+                    warning.innerHTML =
+                        "✔ Name available";
+
+                    let suggestions =
+                        generateSuggestions(val);
+
+                    suggestionsBox.innerHTML =
+                        "Suggested: " + suggestions.join(", ");
+
+                }
+
+            });
+
+        /* PUBLIC */
+        function setPublic() {
+
+            isPrivate = false;
+
+            document
+                .getElementById("toggle")
+                .classList.remove("active-private");
+
+        }
+
+        /* PRIVATE */
+        async function setPrivate() {
+
+            try {
+
+                const user =
+                    await account.get();
+
+                console.log(
+                    "Logged in:",
+                    user.name
+                );
+
+                isPrivate = true;
+
+                document
+                    .getElementById("toggle")
+                    .classList.add("active-private");
+
+            } catch (error) {
+
+                alert(
+                    "Please login first"
+                );
+
+                window.location.href =
+                    "login.html";
+
+            }
+
+        }
+
+        /* LOGIN CHECK */
+        async function checkLogin() {
+
+            try {
+
+                currentUser =
+                    await account.get();
+
+                console.log(
+                    "Logged in as:",
+                    currentUser.name
+                );
+
+            } catch (error) {
+
+                console.log(
+                    "User not logged in"
+                );
+
+            }
+
+        }
+
+        checkLogin();
+
+        /* UPLOAD */
+        async function uploadFile() {
+
+            try {
+
+                const user =
+                    await account.get();
+
+                const customName =
+                    document
+                    .getElementById("nameInput")
+                    .value
+                    .trim();
+
+                const fileInput =
+                    document
+                    .getElementById("mediaFile");
+
+                const file =
+                    fileInput.files[0];
+
+                if (!customName) {
+
+                    alert("Enter a name");
+                    return;
+
+                }
+
+                if (!file) {
+
+                    alert("Choose a file");
+                    return;
+
+                }
+
+                document
+                    .getElementById("uploadBtn")
+                    .innerText =
+                    "Uploading...";
+
+                const uploadedFile =
+                    await storage.createFile(
+                        "6a23ffa10027904cec34",
+                        Appwrite.ID.unique(),
+                        file
+                    );
+
+                let privatePassword = "";
+
+                if (isPrivate) {
+
+                    privatePassword =
+                        customName;
+
+                }
+
+                await databases.createDocument(
+                    "6a23f8dc002dca4e805d",
+                    "files",
+                    Appwrite.ID.unique(), {
+                        galleryId: "",
+                        fileUrl: uploadedFile.$id,
+                        fileType: file.type,
+                        ownerId: user.$id,
+                        customername: customName,
+                        isprivate: isPrivate,
+                        privatePassword: privatePassword,
+                        uplodeat: new Date().toISOString()
+                    }
+                );
+
+                alert(
+                    "Upload Successful"
+                );
+
+                document
+                    .getElementById("nameInput")
+                    .value = "";
+
+                fileInput.value = "";
+
+                setPublic();
+
+                document
+                    .getElementById("uploadBtn")
+                    .innerText =
+                    "Upload";
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Upload Failed\n\n" +
+                    error.message
+                );
+
+                document
+                    .getElementById("uploadBtn")
+                    .innerText =
+                    "Upload";
+
+            }
+
+        }
+
+        document
+            .getElementById("uploadBtn")
+            .addEventListener(
+                "click",
+                uploadFile
+            );
+        document
+            .getElementById("mediaFile")
+            .addEventListener("change", function() {
+
+                const preview =
+                    document.getElementById(
+                        "previewContainer"
+                    );
+
+                preview.innerHTML = "";
+
+                const files = this.files;
+
+                for (const file of files) {
+
+                    const reader =
+                        new FileReader();
+
+                    reader.onload = function(e) {
+
+                        const div =
+                            document.createElement("div");
+
+                        div.className =
+                            "preview-item";
+
+                        if (
+                            file.type.startsWith("image/")
+                        ) {
+
+                            div.innerHTML = `
+                    <img src="${e.target.result}">
+                `;
+
+                        } else if (
+                            file.type.startsWith("video/")
+                        ) {
+
+                            div.innerHTML = `
+                    <video
+                        controls
+                        src="${e.target.result}">
+                    </video>
+                `;
+
+                        }
+
+                        preview.appendChild(div);
+
+                    };
+
+                    reader.readAsDataURL(file);
+
+                }
+
+            });
+    </script>
+</body>
+
+</html>

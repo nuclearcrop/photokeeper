@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Keeper - Login</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Honk:MORF@15&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+GB+J:ital,wght@0,100..400;1,100..400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Playwrite GB J", cursive;
+            font-optical-sizing: auto;
+            font-weight: <weight>;
+            font-style: normal;
+        }
+        
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #2b1d17, #5c4033, #c9a66b);
+        }
+        /* MAIN CARD */
+        
+        .container {
+            width: 900px;
+            max-width: 95%;
+            height: 560px;
+            display: flex;
+            border-radius: 25px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+        }
+        /* LEFT */
+        
+        .left {
+            flex: 1;
+            background: linear-gradient(135deg, #FFD700, #FFB347);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #111;
+            padding: 40px;
+        }
+        
+        .left h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            font-family: "Honk", system-ui;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings: "MORF" 15, "SHLN" 50;
+        }
+        /* RIGHT */
+        
+        .right {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+        }
+        /* SWITCH TEXT */
+        
+        .switch-text {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #ddd;
+        }
+        
+        .switch-text span {
+            color: #FFD700;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        /* FORM */
+        
+        form {
+            display: none;
+            animation: fade 0.4s ease;
+        }
+        
+        form.active {
+            display: block;
+        }
+        
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            outline: none;
+        }
+        
+        input::placeholder {
+            color: #ddd;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            margin-top: 10px;
+            background: linear-gradient(45deg, #FFD700, #FFB347);
+            color: black;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        button:hover {
+            transform: scale(1.03);
+        }
+        /* POPUP */
+        
+        .popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #111;
+            color: #FFD700;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            animation: slide 0.4s ease;
+            z-index: 9999;
+        }
+        
+        @keyframes slide {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- POPUP -->
+    <div id="popup" class="popup">
+        You don't have an account? Please Sign Up first.
+    </div>
+
+    <div class="container">
+
+        <!-- LEFT -->
+        <div class="left">
+            <h1>Photo Keeper</h1>
+            <p>Secure Photography Storage System</p>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="right">
+
+            <!-- LOGIN -->
+            <form id="loginForm" class="active">
+
+                <h2>Sign In</h2>
+
+                <input type="email" id="loginEmail" placeholder="Email">
+                <input type="password" id="loginPassword" placeholder="Password">
+
+                <button type="button" id="loginBtn">
+Login
+</button>
+
+                <div class="switch-text">
+                    Don't have an account?
+                    <span onclick="showSignup()">Sign Up</span>
+                </div>
+
+            </form>
+
+            <!-- SIGNUP -->
+            <form id="signupForm">
+
+                <h2>Sign Up</h2>
+                <input type="text" id="signupName" placeholder="Full Name">
+                <input type="email" id="signupEmail" placeholder="Email">
+                <input type="password" id="signupPassword" placeholder="Create Password">
+                <input type="password" id="signupConfirmPassword" placeholder="Confirm Password">
+                <button type="button" id="signupBtn">
+Create Account
+</button>
+                <div class="switch-text">
+                    Already have an account?
+                    <span onclick="showLogin()">Sign In</span>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+        function showSignup() {
+
+            document.getElementById("loginForm").classList.remove("active");
+            document.getElementById("signupForm").classList.add("active");
+
+            showPopup();
+        }
+
+        function showLogin() {
+
+            document.getElementById("signupForm").classList.remove("active");
+            document.getElementById("loginForm").classList.add("active");
+        }
+
+        /* POPUP FUNCTION */
+
+        function showPopup() {
+
+            const popup = document.getElementById("popup");
+
+            popup.style.display = "block";
+
+            setTimeout(() => {
+                popup.style.display = "none";
+            }, 3000);
+
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@15.0.0"></script>
+    <script src="appwrite.js"></script>
+    <script>
+        document
+            .getElementById("signupBtn")
+            .addEventListener("click", async() => {
+
+                const name =
+                    document.getElementById("signupName").value;
+
+                const email =
+                    document.getElementById("signupEmail").value;
+
+                const password =
+                    document.getElementById("signupPassword").value;
+
+                const confirm =
+                    document.getElementById("signupConfirmPassword").value;
+
+                if (password !== confirm) {
+
+                    alert("Passwords do not match");
+                    return;
+
+                }
+
+                try {
+
+                    await account.create(
+                        Appwrite.ID.unique(),
+                        email,
+                        password,
+                        name
+                    );
+
+                    alert("Account created successfully!");
+
+                    showLogin();
+
+                } catch (error) {
+
+                    alert(error.message);
+
+                }
+
+            });
+    </script>
+    <script>
+        document
+            .getElementById("loginBtn")
+            .addEventListener("click", async() => {
+
+                const email =
+                    document.getElementById("loginEmail").value;
+
+                const password =
+                    document.getElementById("loginPassword").value;
+
+                try {
+
+                    await account.createEmailPasswordSession(
+                        email,
+                        password
+                    );
+
+                    alert("Login successful!");
+
+                    window.location.href =
+                        "home.html";
+
+                } catch (error) {
+
+                    alert(error.message);
+
+                }
+
+            });
+    </script>
+
+</body>
+
+</html>

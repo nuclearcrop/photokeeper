@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Keeper</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Honk:MORF@15&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Playwrite+GB+J:ital,wght@0,100..400;1,100..400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Playwrite GB J", cursive;
+            font-optical-sizing: auto;
+            font-weight: <weight>;
+            font-style: normal;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient( 135deg, #0e0b09, #1b130d, #3d2b1f, #c9a66b, #0e0b09);
+            overflow-x: hidden;
+            color: white;
+        }
+        /* NAVBAR */
+        
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(15px);
+            background: rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-size: 30px;
+            font-weight: 800;
+            color: #FFD700;
+            font-family: "Honk", system-ui;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            transition: 0.3s;
+        }
+        
+        nav ul li a:hover {
+            color: #FFD700;
+        }
+        /* HERO */
+        
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px;
+        }
+        
+        .hero-content {
+            max-width: 950px;
+        }
+        
+        .hero-content h1 {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            animation: fadeUp 1s ease;
+        }
+        
+        .hero-content span {
+            color: #FFD700;
+        }
+        
+        .hero-content p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            animation: fadeUp 1.4s ease;
+        }
+        
+        .btn {
+            padding: 16px 40px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient( 45deg, #FFD700, #FFB347);
+            color: black;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.4s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
+        }
+        /* GLOW EFFECTS */
+        
+        .glow1 {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.15);
+            filter: blur(100px);
+            top: -150px;
+            right: -100px;
+        }
+        
+        .glow2 {
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            background: rgba(255, 180, 80, 0.15);
+            filter: blur(100px);
+            bottom: -100px;
+            left: -100px;
+        }
+        /* FEATURES */
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 80px 8%;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            transition: 0.4s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-card h3 {
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+        /* FOOTER */
+        
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        footer h3 {
+            font-family: "Honk", system-ui;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings: "MORF" 15, "SHLN" 50;
+            font-size: 2rem;
+        }
+        
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media(max-width:768px) {
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+            nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        
+        footer p a {
+            color: rgba(12, 87, 22, 0.781);
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="glow1"></div>
+    <div class="glow2"></div>
+
+    <nav>
+
+        <div class="logo">📸 Photo Keeper</div>
+
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="upload.html">Upload</a></li>
+            <li><a href="search.html">Search</a></li>
+        </ul>
+
+    </nav>
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <h1>
+                Welcome to <span>Photo Keeper</span>
+            </h1>
+
+            <p class="spacing">
+                A premium platform for photographers and photo print studios. Upload, organize, store and retrieve photos instantly using custom photo names.
+            </p>
+
+            <a href="upload.html" class="btn">
+                    Get Started
+                </a>
+
+        </div>
+
+    </section>
+
+    <section class="features">
+
+        <div class="feature-card">
+            <h3>📤 Easy Uploads</h3>
+            <p>
+                Store images securely with custom identifiers.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <h3>🔍 Fast Search</h3>
+            <p>
+                Find any photo instantly using its assigned name.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <h3>🛡 Secure Storage</h3>
+            <p>
+                Keep photographs organized and protected.
+            </p>
+        </div>
+
+    </section>
+
+    <footer>
+
+        <h3>Photo Keeper</h3>
+
+        <p>
+            Premium Photography Storage Platform
+            <a href="nuclearcrop.github.io/web/">know about me</a>
+        </p>
+
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@15.0.0"></script>
+
+    <script src="appwrite.js"></script>
+    <script>
+        console.log(account);
+    </script>
+    <script>
+        async function checkUserSession() {
+
+            try {
+
+                const user = await account.get();
+
+                console.log(
+                    "Already logged in:",
+                    user.name
+                );
+
+                window.location.href =
+                    "home.html";
+
+            } catch (error) {
+
+                console.log(
+                    "No active session"
+                );
+
+            }
+
+        }
+
+        checkUserSession();
+    </script>
+
+</body>
+
+</html>

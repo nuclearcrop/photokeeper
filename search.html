@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Keeper - Search</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+GB+J:ital,wght@0,100..400;1,100..400&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Playwrite GB J", cursive;
+            font-optical-sizing: auto;
+            font-weight: <weight>;
+            font-style: normal;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fff3e0, #f5deb3, #d4af37);
+            padding: 30px;
+        }
+        /* CONTAINER */
+        
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        h2 {
+            color: #7a5200;
+        }
+        /* SEARCH */
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            outline: none;
+        }
+        /* GRID */
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        /* ITEM */
+        
+        .item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .item img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+        }
+        /* PRIVATE BLUR */
+        
+        .private img {
+            filter: blur(10px);
+        }
+        
+        .lock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 28px;
+        }
+        /* TAG */
+        
+        .tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        /* VIEWER OVERLAY */
+        
+        .viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .viewer-box {
+            width: 90%;
+            max-width: 700px;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .viewer-box img {
+            width: 100%;
+            border-radius: 15px;
+        }
+        /* BUTTONS */
+        
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            gap: 10px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .share {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .qr {
+            background: #2196f3;
+            color: white;
+        }
+        
+        .download {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .close {
+            margin-top: 15px;
+            color: red;
+            cursor: pointer;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Search Photos</h2>
+
+        <input type="text" id="searchBox" placeholder="type to search...">
+
+        <div class="grid" id="results"></div>
+
+    </div>
+
+    <!-- VIEWER -->
+    <div class="viewer" id="viewer">
+
+        <div class="viewer-box">
+
+            <img id="viewerImg">
+
+            <div class="actions">
+
+                <button class="share" onclick="shareImage()">Share</button>
+                <button class="qr" onclick="showQR()">QR</button>
+                <button class="download" onclick="downloadImage()">Download</button>
+
+            </div>
+
+            <div class="close" onclick="closeViewer()">Close</div>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@15.0.0"></script>
+    <script src="appwrite.js"></script>
+
+    <script>
+        const DATABASE_ID = "6a23f8dc002dca4e805d";
+        const COLLECTION_ID = "files";
+        const BUCKET_ID = "6a23ffa10027904cec34";
+
+        let data = [];
+        let currentImage = null;
+
+        /* LOAD FILES */
+
+        window.onload = async() => {
+            await loadFiles();
+        };
+
+        async function loadFiles() {
+
+            try {
+
+                const response =
+                    await databases.listDocuments(
+                        DATABASE_ID,
+                        COLLECTION_ID
+                    );
+
+                console.log("Documents:", response);
+
+                data = response.documents.map(doc => {
+
+                    const fileUrl =
+                        storage.getFileView(
+                            BUCKET_ID,
+                            doc.fileUrl
+                        );
+
+                    return {
+                        id: doc.$id,
+                        name: doc.customername || "Unnamed",
+                        img: fileUrl,
+                        type: doc.isprivate ? "private" : "public",
+                        fileType: doc.fileType || "",
+                        privatePassword: doc.privatePassword || ""
+                    };
+
+                });
+
+                console.log("Loaded Files:", data);
+
+                render(data);
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    error.message ||
+                    "Failed to load files"
+                );
+
+            }
+
+        }
+
+        /* SEARCH */
+
+        document
+            .getElementById("searchBox")
+            .addEventListener("input", function() {
+
+                const value =
+                    this.value.toLowerCase();
+
+                const filtered =
+                    data.filter(item =>
+                        item.name
+                        .toLowerCase()
+                        .includes(value)
+                    );
+
+                render(filtered);
+
+            });
+
+        /* RENDER */
+
+        function render(list) {
+
+            const results =
+                document.getElementById("results");
+
+            results.innerHTML = "";
+
+            if (list.length === 0) {
+
+                results.innerHTML =
+                    "<h3>No files found</h3>";
+
+                return;
+            }
+
+            list.forEach(item => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "item";
+
+                if (item.type === "private") {
+                    div.classList.add("private");
+                }
+
+                let mediaHtml = "";
+
+                if (
+                    item.fileType &&
+                    item.fileType.startsWith("video")
+                ) {
+
+                    mediaHtml = `
+                <video
+                    src="${item.img}"
+                    muted
+                    style="
+                        width:100%;
+                        height:160px;
+                        object-fit:cover;
+                    ">
+                </video>
+            `;
+
+                } else {
+
+                    mediaHtml = `
+                <img src="${item.img}">
+            `;
+
+                }
+
+                div.innerHTML = `
+
+            ${mediaHtml}
+
+            <div class="tag">
+                ${item.name}
+            </div>
+
+            <div class="lock">
+                ${item.type === "private"
+                ? "🔒"
+                : ""}
+            </div>
+
+        `;
+
+                div.onclick = function() {
+
+                    if (item.type === "private") {
+
+                        const enteredPassword =
+                            prompt(
+                                "Enter password to view this file"
+                            );
+
+                        if (!enteredPassword) {
+                            return;
+                        }
+
+                        if (
+                            enteredPassword !==
+                            item.privatePassword
+                        ) {
+
+                            alert(
+                                "Incorrect password"
+                            );
+
+                            return;
+                        }
+
+                    }
+
+                    openViewer(item);
+
+                };
+
+                results.appendChild(div);
+
+            });
+
+        }
+
+        /* OPEN VIEWER */
+
+        function openViewer(item) {
+
+            currentImage = item;
+
+            const viewer =
+                document.getElementById("viewer");
+
+            const viewerBox =
+                document.querySelector(".viewer-box");
+
+            if (
+                item.fileType &&
+                item.fileType.startsWith("video")
+            ) {
+
+                viewerBox.innerHTML = `
+
+            <video
+                controls
+                autoplay
+                style="
+                    width:100%;
+                    border-radius:15px;
+                "
+                src="${item.img}">
+            </video>
+
+            <div class="actions">
+
+                <button
+                    class="share"
+                    onclick="shareImage()">
+                    Share
+                </button>
+
+                <button
+                    class="qr"
+                    onclick="showQR()">
+                    QR
+                </button>
+
+                <button
+                    class="download"
+                    onclick="downloadImage()">
+                    Download
+                </button>
+
+            </div>
+
+            <div
+                class="close"
+                onclick="closeViewer()">
+                Close
+            </div>
+
+        `;
+
+            } else {
+
+                viewerBox.innerHTML = `
+
+            <img
+                id="viewerImg"
+                src="${item.img}">
+
+            <div class="actions">
+
+                <button
+                    class="share"
+                    onclick="shareImage()">
+                    Share
+                </button>
+
+                <button
+                    class="qr"
+                    onclick="showQR()">
+                    QR
+                </button>
+
+                <button
+                    class="download"
+                    onclick="downloadImage()">
+                    Download
+                </button>
+
+            </div>
+
+            <div
+                class="close"
+                onclick="closeViewer()">
+                Close
+            </div>
+
+        `;
+
+            }
+
+            viewer.style.display = "flex";
+
+        }
+
+        /* CLOSE */
+
+        function closeViewer() {
+
+            document
+                .getElementById("viewer")
+                .style.display = "none";
+
+        }
+
+        /* DOWNLOAD */
+
+        function downloadImage() {
+
+            if (!currentImage) return;
+
+            const a =
+                document.createElement("a");
+
+            a.href =
+                currentImage.img;
+
+            a.download =
+                currentImage.name;
+
+            document.body.appendChild(a);
+
+            a.click();
+
+            document.body.removeChild(a);
+
+        }
+
+        /* SHARE */
+
+        function shareImage() {
+
+            if (!currentImage) return;
+
+            navigator.clipboard.writeText(
+                currentImage.img
+            );
+
+            alert(
+                "Link copied!"
+            );
+
+        }
+
+        /* QR */
+
+        function showQR() {
+
+            if (!currentImage) return;
+
+            const qrUrl =
+                "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" +
+                encodeURIComponent(
+                    currentImage.img
+                );
+
+            window.open(qrUrl);
+
+        }
+    </script>
+</body>
+
+</html>
