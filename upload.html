@@ -191,7 +191,7 @@
 <input
     type="file"
     id="mediaFile"
-    multile
+    
     accept="image/*,video/*"
 >
 <div id="previewContainer"></div></label>
@@ -206,7 +206,22 @@ Upload
     <script src="appwrite.js"></script>
 
     <script>
-        let existingNames = ["wedding001", "birthday2024", "natureclip"];
+        async function isNameTaken(name){
+
+    const response =
+        await databases.listDocuments(
+            "6a23f8dc002dca4e805d",
+            "files"
+        );
+
+    return response.documents.some(
+        doc =>
+            doc.customername &&
+            doc.customername.toLowerCase() ===
+            name.toLowerCase()
+    );
+
+}
         let isPrivate = false;
         let currentUser = null;
 
@@ -225,50 +240,50 @@ Upload
         }
 
         /* LIVE NAME CHECK */
-        document.getElementById("nameInput")
-            .addEventListener("input", function() {
+       document.getElementById("nameInput")
+.addEventListener("input", async function(){
 
-                let val = this.value.trim();
+    const val =
+        this.value.trim();
 
-                let warning =
-                    document.getElementById("warning");
+    const warning =
+        document.getElementById("warning");
 
-                let suggestionsBox =
-                    document.getElementById("suggestions");
+    const suggestionsBox =
+        document.getElementById("suggestions");
 
-                if (val.length === 0) {
+    if(!val){
 
-                    warning.innerHTML = "";
-                    suggestionsBox.innerHTML = "";
-                    return;
+        warning.innerHTML = "";
+        suggestionsBox.innerHTML = "";
+        return;
 
-                }
+    }
 
-                if (existingNames.includes(val)) {
+    const taken =
+        await isNameTaken(val);
 
-                    warning.innerHTML =
-                        "⚠ Name already taken";
+    if(taken){
 
-                    let suggestions =
-                        generateSuggestions(val);
+        warning.innerHTML =
+            "❌ Name already taken";
 
-                    suggestionsBox.innerHTML =
-                        "Try: " + suggestions.join(", ");
+        suggestionsBox.innerHTML =
+            "Try: " +
+            generateSuggestions(val).join(", ");
 
-                } else {
+    }
+    else{
 
-                    warning.innerHTML =
-                        "✔ Name available";
+        warning.innerHTML =
+            "✅ Name available";
 
-                    let suggestions =
-                        generateSuggestions(val);
+        suggestionsBox.innerHTML =
+            "";
 
-                    suggestionsBox.innerHTML =
-                        "Suggested: " + suggestions.join(", ");
+    }
 
-                }
-
-            });
+});
 
         /* PUBLIC */
         function setPublic() {
@@ -365,6 +380,18 @@ Upload
                     return;
 
                 }
+                const alreadyExists =
+    await isNameTaken(customName);
+
+if(alreadyExists){
+
+    alert(
+        "This name is already taken. Please choose another."
+    );
+
+    return;
+
+}
 
                 if (!file) {
 
