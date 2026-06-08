@@ -301,7 +301,8 @@ Upload
 
             try {
 
-               
+                const user =
+                    await account.get();
 
                 console.log(
                     "Logged in:",
@@ -357,8 +358,7 @@ Upload
 
             try {
 
-                const user =
-                    await account.get();
+             
 
                 const customName =
                     document
@@ -427,6 +427,7 @@ if(alreadyExists){
                         galleryId: "",
                         fileUrl: uploadedFile.$id,
                         fileType: file.type,
+                        ownerId: user.$id,
                         customername: customName,
                         isprivate: isPrivate,
                         privatePassword: privatePassword,
