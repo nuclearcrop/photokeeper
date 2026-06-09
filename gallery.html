@@ -589,7 +589,7 @@
 
         <button
             class="download-card"
-            onclick="event.stopPropagation(); downloadFile('${file.url}','${file.name}')">
+            onclick="event.stopPropagation(); downloadFile('${file.fileId}','${file.name}')">
 
             ⬇ Download
 
@@ -676,12 +676,18 @@
             a.click();
 
         }
-        function downloadFile(url, name){
+        function downloadFile(fileId, name){
+
+    const downloadUrl =
+        storage.getFileDownload(
+            BUCKET_ID,
+            fileId
+        );
 
     const a =
         document.createElement("a");
 
-    a.href = url;
+    a.href = downloadUrl;
 
     a.download = name;
 
