@@ -169,6 +169,41 @@
                 opacity: 1;
             }
         }
+        .floating-notice{
+
+    position:fixed;
+    top:20px;
+    right:20px;
+
+    background:#ff9800;
+    color:white;
+
+    padding:15px 20px;
+
+    border-radius:12px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.2);
+
+    display:none;
+
+    z-index:9999;
+
+    animation:slideIn .3s ease;
+}
+
+@keyframes slideIn{
+
+    from{
+        transform:translateX(100%);
+        opacity:0;
+    }
+
+    to{
+        transform:translateX(0);
+        opacity:1;
+    }
+
+}
     </style>
 </head>
 
@@ -230,6 +265,8 @@ Create Account
         </div>
 
     </div>
+    <div id="floatingNotice" class="floating-notice">
+</div>
 
     <script>
         function showSignup() {
@@ -337,6 +374,44 @@ Create Account
                 }
 
             });
+    </script>
+    <script>
+        window.addEventListener(
+    "load",
+    function(){
+
+        const msg =
+            localStorage.getItem(
+                "loginMessage"
+            );
+
+        if(msg){
+
+            const notice =
+                document.getElementById(
+                    "floatingNotice"
+                );
+
+            notice.innerText = msg;
+
+            notice.style.display =
+                "block";
+
+            localStorage.removeItem(
+                "loginMessage"
+            );
+
+            setTimeout(() => {
+
+                notice.style.display =
+                    "none";
+
+            }, 4000);
+
+        }
+
+    }
+);
     </script>
 
 </body>
