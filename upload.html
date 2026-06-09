@@ -165,6 +165,7 @@
     <div class="card">
 
         <h2>Upload Media</h2>
+        <p>Smart name generator + public/private system</p>
 
         <!-- NAME -->
         <input type="text" id="nameInput" placeholder="Enter Unique Name">
@@ -354,6 +355,25 @@ Upload
 
         /* UPLOAD */
         async function uploadFile() {
+            let user;
+
+try{
+
+    user = await account.get();
+
+}
+catch(error){
+
+    localStorage.setItem(
+        "loginMessage",
+        "Please login to upload files"
+    );
+
+    window.location.href =
+        "login.html";
+
+    return;
+}
 
             try {
 
@@ -425,7 +445,7 @@ if(alreadyExists){
                         galleryId: "",
                         fileUrl: uploadedFile.$id,
                         fileType: file.type,
-                        ownerId: currentUser ? currentUser.$id : "guest",
+                        ownerId: user.$id,
                         customername: customName,
                         isprivate: isPrivate,
                         privatePassword: privatePassword,
